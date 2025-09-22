@@ -6,8 +6,8 @@
   "license": "AGPL-3.0",
   "scripts": {
     "analyze": "webpack --mode=none",
-    "build:dev": "webpack --env COMMIT_HASH=$(git rev-parse --short HEAD) --mode=development",
-    "build:prod": "webpack --env COMMIT_HASH=$(git rev-parse --short HEAD) --mode=production",
+    "build:dev": "node build-dev.js",
+    "build:prod": "node build-prod.js",
     "clean": "pnpm rimraf dist",
     "dev": "node generate_translations.js && pnpm build:dev --watch",
     "lint": "pnpm translations:generate && tsc --noEmit && pnpm eslint --report-unused-disable-directives && pnpm prettier --check \"src/**/*.{ts,tsx,js,mjs,css,scss}\"",

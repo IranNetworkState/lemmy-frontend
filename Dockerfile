@@ -35,6 +35,7 @@ COPY generate_translations.js \
   tsconfig.json \
   webpack.config.js \
   .babelrc \
+  build-prod.js \
   ./
 
 COPY lemmy-translations lemmy-translations

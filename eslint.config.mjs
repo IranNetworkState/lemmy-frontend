@@ -30,6 +30,8 @@ export default [
     ignores: [
       "generate_translations.js",
       "webpack.config.js",
+      "build-dev.js",
+      "build-prod.js",
       "src/shared/build-config.js",
       "src/api_tests",
       "**/*.png",
