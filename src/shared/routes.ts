@@ -21,14 +21,10 @@ import {
 } from "./components/home/home";
 import { Instances, InstancesFetchConfig } from "./components/home/instances";
 import { Legal } from "./components/home/legal";
-import {
-  Login,
-  LoginFetchConfig,
-  getLoginQueryParams,
-} from "./components/home/login";
+import { AuthenticationRouter } from "./components/auth/AuthenticationRouter";
+import { AdminLogin } from "./components/auth/AdminLogin";
 import { LoginReset } from "./components/home/login-reset";
 import { Setup } from "./components/home/setup";
-import { Signup } from "./components/home/signup";
 import {
   Modlog,
   ModlogFetchConfig,
@@ -105,16 +101,15 @@ export const routes: IRoutePropsWithFetch<RouteData, any, any>[] = [
   } as HomeFetchConfig,
   {
     path: `/login`,
-    component: Login,
-    getQueryParams: getLoginQueryParams,
-  } as LoginFetchConfig,
+    component: AuthenticationRouter,
+  },
+  {
+    path: `/admin-login`,
+    component: AdminLogin,
+  },
   {
     path: `/login_reset`,
     component: LoginReset,
-  },
-  {
-    path: `/signup`,
-    component: Signup,
   },
   {
     path: `/create_post`,

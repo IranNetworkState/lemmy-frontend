@@ -438,16 +438,6 @@ export class Navbar extends Component<NavbarProps, NavbarState> {
                       {I18NextService.i18n.t("login")}
                     </NavLink>
                   </li>
-                  <li className="nav-item">
-                    <NavLink
-                      to="/signup"
-                      className="nav-link"
-                      title={I18NextService.i18n.t("sign_up")}
-                      onMouseUp={linkEvent(this, handleCollapseClick)}
-                    >
-                      {I18NextService.i18n.t("sign_up")}
-                    </NavLink>
-                  </li>
                 </>
               )}
             </ul>
