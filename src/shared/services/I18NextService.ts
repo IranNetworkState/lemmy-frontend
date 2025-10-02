@@ -227,7 +227,16 @@ export function findLanguageChunkNames(
     languages,
     interfaceLanguage,
   );
-  const localeNames = locale.bundled ? [] : [`date-fns-${locale.resource}-js`];
+  // Fallback to en-US if locale is undefined
+  const safeLocale = locale || {
+    resource: "en-US",
+    code: "en-US",
+    name: "English",
+    bundled: true,
+  };
+  const localeNames = safeLocale.bundled
+    ? []
+    : [`date-fns-${safeLocale.resource}-js`];
   return [
     ...localeNames,
     ...translations
@@ -244,7 +253,13 @@ export async function loadLanguageInstances(
     languages,
     interfaceLanguage,
   );
-  const localePromise = loadLocale(localeDesc);
+  // Fallback to en-US if localeDesc is undefined
+  const safeLocaleDesc = localeDesc || {
+    resource: "en-US",
+    code: "en-US",
+    name: "English",
+  };
+  const localePromise = loadLocale(safeLocaleDesc);
 
   const options: InitOptions = {
     debug: false,
