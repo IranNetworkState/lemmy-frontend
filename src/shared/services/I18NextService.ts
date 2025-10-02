@@ -5,19 +5,20 @@ import { Locale, setDefaultOptions } from "date-fns";
 import { isBrowser } from "@utils/browser";
 import { toast } from "@utils/app";
 
+/****************
+ * Translations *
+ ****************/
+
 export type TranslationDesc = {
-  // Name of the translation file in `lemmy-translations`
   resource: string;
-  // Name of the language in datefns library (undefined if it is equal to `resource`)
-  datefns_resource?: string;
-  // Short codename
   code: string;
-  // Human readable language name
   name: string;
   bundled?: boolean;
 };
 
-export const allLanguages: TranslationDesc[] = [
+type FoundTranslation = [TranslationDesc] | [TranslationDesc, TranslationDesc];
+
+export const languages: TranslationDesc[] = [
   { resource: "ar", code: "ar", name: "العربية" },
   { resource: "bg", code: "bg", name: "Български" },
   { resource: "ca", code: "ca", name: "Català" },
@@ -25,22 +26,14 @@ export const allLanguages: TranslationDesc[] = [
   { resource: "da", code: "da", name: "Dansk" },
   { resource: "de", code: "de", name: "Deutsch" },
   { resource: "el", code: "el", name: "Ελληνικά" },
-  {
-    resource: "en",
-    // There is no general variant for `en` in datefns, only region specific ones
-    datefns_resource: "en-US",
-    code: "en",
-    name: "English",
-    bundled: true,
-  },
+  { resource: "en", code: "en", name: "English", bundled: true },
   { resource: "eo", code: "eo", name: "Esperanto" },
   { resource: "es", code: "es", name: "Español" },
   { resource: "eu", code: "eu", name: "Euskara" },
-  { resource: "fa", datefns_resource: "fa-IR", code: "fa", name: "فارسی" },
+  { resource: "fa", code: "fa", name: "فارسی" },
   { resource: "fi", code: "fi", name: "Suomi" },
   { resource: "fr", code: "fr", name: "Français" },
-  // Irish Gaelic is not supported by datefns, use English date format
-  { resource: "ga", datefns_resource: "en-US", code: "ga", name: "Gaeilge" },
+  { resource: "ga", code: "ga", name: "Gaeilge" },
   { resource: "gl", code: "gl", name: "Galego" },
   { resource: "hr", code: "hr", name: "Hrvatski" },
   { resource: "hu", code: "hu", name: "magyar nyelv" },
@@ -53,36 +46,15 @@ export const allLanguages: TranslationDesc[] = [
   { resource: "oc", code: "oc", name: "Occitan" },
   { resource: "pl", code: "pl", name: "Polski" },
   { resource: "pt", code: "pt", name: "Português" },
-  {
-    resource: "pt_BR",
-    datefns_resource: "pt-BR",
-    code: "pt-BR",
-    name: "Português (Brasil)",
-  },
+  { resource: "pt_BR", code: "pt-BR", name: "Português (Brasil)" },
   { resource: "ru", code: "ru", name: "Русский" },
   { resource: "sv", code: "sv", name: "Svenska" },
   { resource: "vi", code: "vi", name: "Tiếng Việt" },
-  {
-    resource: "zh",
-    datefns_resource: "zh-CN",
-    code: "zh-CN",
-    name: "中文 (简体)",
-  },
-  {
-    resource: "zh_Hant",
-    datefns_resource: "zh-TW",
-    code: "zh-TW",
-    name: "中文 (繁體)",
-  },
+  { resource: "zh", code: "zh", name: "中文 (简体)" },
+  { resource: "zh_Hant", code: "zh-TW", name: "中文 (繁體)" },
 ];
 
-/****************
- * Translations *
- ****************/
-
-type FoundTranslation = [TranslationDesc] | [TranslationDesc, TranslationDesc];
-
-const languageByCode = allLanguages.reduce((acc, l) => {
+const languageByCode = languages.reduce((acc, l) => {
   acc[l.code] = l;
   return acc;
 }, {});
@@ -102,7 +74,7 @@ async function loadTranslation(
 
 export async function verifyTranslationImports(): Promise<ImportReport> {
   const report = new ImportReport();
-  const promises = allLanguages.map(lang =>
+  const promises = languages.map(lang =>
     loadTranslation(lang)
       .then(x => {
         if (x && x["translation"]) {
@@ -136,19 +108,119 @@ export function pickTranslations(lang: string): FoundTranslation | undefined {
  * date-fns *
  ************/
 
-const localeByCode = allLanguages.reduce((acc, l) => {
+export type DateFnsDesc = { resource: string; code: string; bundled?: boolean };
+
+const locales: DateFnsDesc[] = [
+  { resource: "af", code: "af" },
+  { resource: "ar", code: "ar" },
+  { resource: "ar-DZ", code: "ar-DZ" },
+  { resource: "ar-EG", code: "ar-EG" },
+  { resource: "ar-MA", code: "ar-MA" },
+  { resource: "ar-SA", code: "ar-SA" },
+  { resource: "ar-TN", code: "ar-TN" },
+  { resource: "az", code: "az" },
+  { resource: "be", code: "be" },
+  { resource: "be-tarask", code: "be-tarask" },
+  { resource: "bg", code: "bg" },
+  { resource: "bn", code: "bn" },
+  { resource: "bs", code: "bs" },
+  { resource: "ca", code: "ca" },
+  { resource: "cs", code: "cs" },
+  { resource: "cy", code: "cy" },
+  { resource: "da", code: "da" },
+  { resource: "de", code: "de" },
+  { resource: "de-AT", code: "de-AT" },
+  { resource: "el", code: "el" },
+  { resource: "en-AU", code: "en-AU" },
+  { resource: "en-CA", code: "en-CA" },
+  { resource: "en-GB", code: "en-GB" },
+  { resource: "en-IE", code: "en-IE" },
+  { resource: "en-IE", code: "ga" }, // "ga" (Irish Gaelic) is available as user pref, but has currently no date-fns support
+  { resource: "en-IN", code: "en-IN" },
+  { resource: "en-NZ", code: "en-NZ" },
+  { resource: "en-US", code: "en-US", bundled: true },
+  { resource: "en-ZA", code: "en-ZA" },
+  { resource: "eo", code: "eo" },
+  { resource: "es", code: "es" },
+  { resource: "et", code: "et" },
+  { resource: "eu", code: "eu" },
+  { resource: "fa-IR", code: "fa-IR" },
+  { resource: "fi", code: "fi" },
+  { resource: "fr", code: "fr" },
+  { resource: "fr-CA", code: "fr-CA" },
+  { resource: "fr-CH", code: "fr-CH" },
+  { resource: "fy", code: "fy" },
+  { resource: "gd", code: "gd" },
+  { resource: "gl", code: "gl" },
+  { resource: "gu", code: "gu" },
+  { resource: "he", code: "he" },
+  { resource: "hi", code: "hi" },
+  { resource: "hr", code: "hr" },
+  { resource: "ht", code: "ht" },
+  { resource: "hu", code: "hu" },
+  { resource: "hy", code: "hy" },
+  { resource: "id", code: "id" },
+  { resource: "is", code: "is" },
+  { resource: "it", code: "it" },
+  { resource: "it-CH", code: "it-CH" },
+  { resource: "ja", code: "ja" },
+  { resource: "ja-Hira", code: "ja-Hira" },
+  { resource: "ka", code: "ka" },
+  { resource: "kk", code: "kk" },
+  { resource: "km", code: "km" },
+  { resource: "kn", code: "kn" },
+  { resource: "ko", code: "ko" },
+  { resource: "lb", code: "lb" },
+  { resource: "lt", code: "lt" },
+  { resource: "lv", code: "lv" },
+  { resource: "mk", code: "mk" },
+  { resource: "mn", code: "mn" },
+  { resource: "ms", code: "ms" },
+  { resource: "mt", code: "mt" },
+  { resource: "nb", code: "nb" },
+  { resource: "nl", code: "nl" },
+  { resource: "nl-BE", code: "nl-BE" },
+  { resource: "nn", code: "nn" },
+  { resource: "oc", code: "oc" },
+  { resource: "pl", code: "pl" },
+  { resource: "pt", code: "pt" },
+  { resource: "pt-BR", code: "pt-BR" },
+  { resource: "ro", code: "ro" },
+  { resource: "ru", code: "ru" },
+  { resource: "sk", code: "sk" },
+  { resource: "sl", code: "sl" },
+  { resource: "sq", code: "sq" },
+  { resource: "sr", code: "sr" },
+  { resource: "sr-Latn", code: "sr-Latn" },
+  { resource: "sv", code: "sv" },
+  { resource: "ta", code: "ta" },
+  { resource: "te", code: "te" },
+  { resource: "th", code: "th" },
+  { resource: "tr", code: "tr" },
+  { resource: "ug", code: "ug" },
+  { resource: "uk", code: "uk" },
+  { resource: "uz", code: "uz" },
+  { resource: "uz-Cyrl", code: "uz-Cyrl" },
+  { resource: "vi", code: "vi" },
+  { resource: "zh-CN", code: "zh" },
+  { resource: "zh-CN", code: "zh-CN" },
+  { resource: "zh-HK", code: "zh-HK" },
+  { resource: "zh-TW", code: "zh-TW" },
+];
+
+const localeByCode = locales.reduce((acc, l) => {
   acc[l.code] = l;
   return acc;
 }, {});
 
-async function loadLocale(locale: TranslationDesc): Promise<Locale> {
+async function loadLocale(locale: DateFnsDesc): Promise<Locale> {
   return import(
     /* webpackChunkName: `date-fns-[request]` */
-    `date-fns/locale/${locale.datefns_resource ?? locale.resource}.js`
+    `date-fns/locale/${locale.resource}.js`
   ).then(x => x.default);
 }
 
-export function pickLocale(lang: string): TranslationDesc | undefined {
+export function pickLocale(lang: string): DateFnsDesc | undefined {
   if (lang === "en") {
     lang = "en-US";
   }
@@ -170,7 +242,7 @@ export function pickLocale(lang: string): TranslationDesc | undefined {
   }
   if (!locale && parts.length > 0) {
     // Look for any variant of the same language
-    return allLanguages.find(l => {
+    return locales.find(l => {
       return l.code.startsWith(parts[0]);
     });
   }
@@ -179,10 +251,10 @@ export function pickLocale(lang: string): TranslationDesc | undefined {
 
 export async function verifyDateFnsImports(): Promise<ImportReport> {
   const report = new ImportReport();
-  const promises = allLanguages.map(locale =>
+  const promises = locales.map(locale =>
     loadLocale(locale)
       .then(x => {
-        if (x && x.code === (locale.datefns_resource ?? locale.resource)) {
+        if (x && x.code === locale.resource) {
           report.success.push(locale.code);
         } else {
           throw "unexpected format";
@@ -204,7 +276,7 @@ export async function verifyDateFnsImports(): Promise<ImportReport> {
 export function findLanguageDescs(
   languages: readonly string[], // readonly because navigator.languages is too
   interfaceLanguage: string = "browser",
-): [TranslationDesc, FoundTranslation] {
+): [DateFnsDesc, FoundTranslation] {
   const langList =
     interfaceLanguage === "browser"
       ? [...languages]
@@ -227,16 +299,7 @@ export function findLanguageChunkNames(
     languages,
     interfaceLanguage,
   );
-  // Fallback to en-US if locale is undefined
-  const safeLocale = locale || {
-    resource: "en-US",
-    code: "en-US",
-    name: "English",
-    bundled: true,
-  };
-  const localeNames = safeLocale.bundled
-    ? []
-    : [`date-fns-${safeLocale.resource}-js`];
+  const localeNames = locale.bundled ? [] : [`date-fns-${locale.resource}-js`];
   return [
     ...localeNames,
     ...translations
@@ -253,13 +316,7 @@ export async function loadLanguageInstances(
     languages,
     interfaceLanguage,
   );
-  // Fallback to en-US if localeDesc is undefined
-  const safeLocaleDesc = localeDesc || {
-    resource: "en-US",
-    code: "en-US",
-    name: "English",
-  };
-  const localePromise = loadLocale(safeLocaleDesc);
+  const localePromise = loadLocale(localeDesc);
 
   const options: InitOptions = {
     debug: false,

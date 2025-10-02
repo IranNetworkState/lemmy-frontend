@@ -1,5 +1,3 @@
-/* eslint no-console: "off" */
-
 import { getStaticDir } from "@utils/env";
 import { VERSION } from "../shared/version";
 import express from "express";
@@ -44,8 +42,11 @@ server.use(express.urlencoded({ extended: false }));
 
 const serverPath = path.resolve("./dist");
 
-// In dev mode, don't use the maxAge and immutable, or it breaks live reload for dev
-if (process.env["NODE_ENV"] === "development") {
+// In debug mode, don't use the maxAge and immutable, or it breaks live reload for dev
+if (
+  process.env["LEMMY_UI_DEBUG"] ||
+  process.env["NODE_ENV"] === "development"
+) {
   server.use(getStaticDir(), express.static(serverPath));
 } else {
   server.use(
@@ -61,6 +62,7 @@ if (process.env["NODE_ENV"] === "development") {
 // Only set the CSP if not in debug mode
 if (
   !process.env["LEMMY_UI_DISABLE_CSP"] &&
+  !process.env["LEMMY_UI_DEBUG"] &&
   process.env["NODE_ENV"] !== "development"
 ) {
   server.use(setDefaultCsp);

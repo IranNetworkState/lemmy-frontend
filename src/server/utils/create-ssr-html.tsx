@@ -51,7 +51,7 @@ export async function createSsrHtml(
             .then(buf => buf.toString("base64"))}`
         : favIconPngUrl;
     } catch {
-      console.warn(
+      console.log(
         "Could not fetch site logo for apple touch icon. Using default icon.",
       );
       appleTouchIcon = favIconPngUrl;
@@ -59,7 +59,7 @@ export async function createSsrHtml(
   }
 
   const erudaStr =
-    process.env["NODE_ENV"] === "development"
+    process.env["LEMMY_UI_DEBUG"] === "true"
       ? renderToString(
           <>
             <script
